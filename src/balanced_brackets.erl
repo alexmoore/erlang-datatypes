@@ -17,24 +17,27 @@ is_balanced(Input) ->
 is_balanced([], Seen) ->
     length(Seen) == 0;
 
-is_balanced(_Input = [NextChar | T], Seen) ->
-    case NextChar of
-        $( -> is_balanced(T, [NextChar | Seen]);
-        ${ -> is_balanced(T, [NextChar | Seen]);
-        $[ -> is_balanced(T, [NextChar | Seen]);
+is_balanced([Next | T], Seen) when Next =:= $( orelse Next =:= $[ orelse Next =:= ${ ->
+    is_balanced(T, [Next | Seen]);
 
-        $) -> check_closer($(, T, Seen);
-        $} -> check_closer(${, T, Seen);
-        $] -> check_closer($[, T, Seen);
+is_balanced([Next | T], Seen) when Next =:= $) orelse Next =:= $] orelse Next =:= $} ->
+    check_closer(Next, T, Seen);
 
-        _Else -> is_balanced(T, Seen)
-    end.
+is_balanced([Next | T], Seen) ->
+    is_balanced(T, Seen).
 
-check_closer(OpeningBracket, InputTail, Seen) ->
-    case Seen of
-        [OpeningBracket | SeenTail] -> is_balanced(InputTail, SeenTail);
-        _Else -> false
-    end.
+check_closer(Next, InputTail, [LastSeen | SeenTail]) when Next =:= $) andalso LastSeen =:= $( ->
+    is_balanced(InputTail, SeenTail);
+
+check_closer(Next, InputTail, [LastSeen | SeenTail]) when Next =:= $] andalso LastSeen =:= $[ ->
+    is_balanced(InputTail, SeenTail);
+
+check_closer(Next, InputTail, [LastSeen | SeenTail]) when Next =:= $} andalso LastSeen =:= ${ ->
+    is_balanced(InputTail, SeenTail);
+
+%% Catchall for mismatches, or the Seen stack is empty.
+check_closer(_,_,_) ->
+    false.
 
 %%% Tests
 
