@@ -1,5 +1,5 @@
 -module(balanced_brackets).
--export([balanced_brackets/1]).
+-export([is_balanced/1]).
 
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
@@ -7,45 +7,33 @@
 
 %%% Public Functions
 
--spec balanced_brackets(string()) -> boolean().
-balanced_brackets(Input) ->
-    check_balance(Input, []).
+-spec is_balanced(string()) -> boolean().
+is_balanced(Input) ->
+    is_balanced(Input, []).
 
 %%% Private Functions
 
--spec check_balance(string(), [char()]) -> boolean().
-check_balance([], Seen) ->
+-spec is_balanced(string(), [char()]) -> boolean().
+is_balanced([], Seen) ->
     length(Seen) == 0;
 
-check_balance(_Input = [Next | T], Seen) ->
-    case {is_opener(Next), is_closer(Next)} of
-        {true, false} -> check_balance(T, [Next | Seen]);
-        {false, true} -> check_closer(Next, T, Seen);
-        _Else -> check_balance(T, Seen)
+is_balanced(_Input = [NextChar | T], Seen) ->
+    case NextChar of
+        $( -> is_balanced(T, [NextChar | Seen]);
+        ${ -> is_balanced(T, [NextChar | Seen]);
+        $[ -> is_balanced(T, [NextChar | Seen]);
+
+        $) -> check_closer($(, T, Seen);
+        $} -> check_closer(${, T, Seen);
+        $] -> check_closer($[, T, Seen);
+
+        _Else -> is_balanced(T, Seen)
     end.
 
--spec check_closer(char(), string(), [char()]) -> boolean().
-check_closer(ClosingBracket, InputTail, Seen) ->
-    OpeningBracket = get_matching_opener(ClosingBracket),
+check_closer(OpeningBracket, InputTail, Seen) ->
     case Seen of
-        [OpeningBracket | SeenTail] -> check_balance(InputTail, SeenTail);
+        [OpeningBracket | SeenTail] -> is_balanced(InputTail, SeenTail);
         _Else -> false
-    end.
-
--spec is_opener(char()) -> boolean().
-is_opener(Char) ->
-    Char == $( orelse Char == ${ orelse Char == $[.
-
--spec is_closer(char()) -> boolean().
-is_closer(Char) ->
-    Char == $) orelse Char == $} orelse Char == $].
-
--spec get_matching_opener(char()) -> char().
-get_matching_opener(Char) ->
-    case Char of
-        $) -> $(;
-        $} -> ${;
-        $] -> $[
     end.
 
 %%% Tests
@@ -53,23 +41,23 @@ get_matching_opener(Char) ->
 -ifdef(TEST).
 
 empty_string_test() ->
-    ?assert(true =:= balanced_brackets("")).
+    ?assert(true =:= is_balanced("")).
 
 good_patterns_test() ->
-    ?assert(true =:= balanced_brackets("()")),
-    ?assert(true =:= balanced_brackets("{}")),
-    ?assert(true =:= balanced_brackets("[]")),
-    ?assert(true =:= balanced_brackets("(()()()())")),
-    ?assert(true =:= balanced_brackets("(((())))")),
-    ?assert(true =:= balanced_brackets("([])")),
-    ?assert(true =:= balanced_brackets("([]{foo}[{}])")),
-    ?assert(true =:= balanced_brackets("(bar[]{}[{}])")),
-    ?assert(true =:= balanced_brackets("(ifdef[]{}[{}endif])")).
+    ?assert(true =:= is_balanced("()")),
+    ?assert(true =:= is_balanced("{}")),
+    ?assert(true =:= is_balanced("[]")),
+    ?assert(true =:= is_balanced("(()()()())")),
+    ?assert(true =:= is_balanced("(((())))")),
+    ?assert(true =:= is_balanced("([])")),
+    ?assert(true =:= is_balanced("([]{foo}[{}])")),
+    ?assert(true =:= is_balanced("(bar[]{}[{}])")),
+    ?assert(true =:= is_balanced("(ifdef[]{}[{}endif])")).
 
 bad_patterns_test() ->
-    ?assert(false =:= balanced_brackets(")(")),
-    ?assert(false =:= balanced_brackets("][")),
-    ?assert(false =:= balanced_brackets("}{")),
-    ?assert(false =:= balanced_brackets("({)})")),
-    ?assert(false =:= balanced_brackets("{[}")).
+    ?assert(false =:= is_balanced(")(")),
+    ?assert(false =:= is_balanced("][")),
+    ?assert(false =:= is_balanced("}{")),
+    ?assert(false =:= is_balanced("({)})")),
+    ?assert(false =:= is_balanced("{[}")).
 -endif.
