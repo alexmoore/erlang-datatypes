@@ -17,17 +17,15 @@ balanced_brackets(Input) ->
 check_balance([], Seen) ->
     length(Seen) == 0;
 
-check_balance(_Input = [NextChar | T], Seen) ->
-    case NextChar of
-        $( -> check_balance(T, [NextChar | Seen]);
-        ${ -> check_balance(T, [NextChar | Seen]);
-        $[ -> check_balance(T, [NextChar | Seen]);
+check_balance(_Input = [Next | T], Seen) ->
+    if
+        Next == $(; Next == ${; Next == $[ ->
+            check_balance(T, [Next | Seen]);
 
-        $) -> check_closer($(, T, Seen);
-        $} -> check_closer(${, T, Seen);
-        $] -> check_closer($[, T, Seen);
-
-        _Else -> check_balance(T, Seen)
+        Next == $) -> check_closer($(, T, Seen);
+        Next == $} -> check_closer(${, T, Seen);
+        Next == $] -> check_closer($[, T, Seen);
+        true -> check_balance(T, Seen)
     end.
 
 check_closer(OpeningBracket, InputTail, Seen) ->
