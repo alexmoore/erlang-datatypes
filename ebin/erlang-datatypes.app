@@ -1,7 +1,7 @@
 {application, 'erlang-datatypes', [
 	{description, ""},
 	{vsn, "rolling"},
-	{modules, ['trie']},
+	{modules, ['balanced_brackets','trie']},
 	{registered, []},
 	{applications, [kernel,stdlib]},
 	{env, []}
