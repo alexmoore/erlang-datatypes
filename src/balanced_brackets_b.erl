@@ -1,4 +1,4 @@
--module(balanced_brackets).
+-module(balanced_brackets_b).
 -export([is_balanced/1]).
 
 -ifdef(TEST).

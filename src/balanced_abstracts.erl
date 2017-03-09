@@ -1,4 +1,4 @@
--module(balanced_abstract).
+-module(balanced_abstracts).
 -export([is_balanced/2]).
 
 -ifdef(TEST).
