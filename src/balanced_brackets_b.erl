@@ -23,7 +23,7 @@ is_balanced([Next | T], Seen) when Next =:= $( orelse Next =:= $[ orelse Next =:
 is_balanced([Next | T], Seen) when Next =:= $) orelse Next =:= $] orelse Next =:= $} ->
     check_closer(Next, T, Seen);
 
-is_balanced([Next | T], Seen) ->
+is_balanced([_Next | T], Seen) ->
     is_balanced(T, Seen).
 
 check_closer(Next, InputTail, [LastSeen | SeenTail]) when Next =:= $) andalso LastSeen =:= $( ->

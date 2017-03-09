@@ -1,5 +1,5 @@
 -module(trie).
--export([new/2, add/3, is_member/2, find/2]).
+-export([new/0, new/2, add/3, is_member/2, find/2]).
 
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
@@ -10,6 +10,9 @@
 -type trie_key() :: char().
 -type trie_value() :: term() | undefined.
 
+-spec new() -> trie().
+new() ->
+    create_blank_trie().
 
 -spec new(nonempty_string(), trie_value()) -> trie().
 new(Word, Value) when is_list(Word) andalso length(Word) > 0 ->
